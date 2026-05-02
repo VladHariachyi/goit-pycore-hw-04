@@ -1,6 +1,8 @@
 from pathlib import Path
 from colorama import Fore, Style
 
+from .constants import DEFAULT_INDENT_AMOUNT
+
 
 def get_indent_template(indent_amount: int) -> str:
     """Generates the indent template.
@@ -11,14 +13,14 @@ def get_indent_template(indent_amount: int) -> str:
     Returns:
     indent_template (str) -- The string with calculated amount of spacings to represent indent.
     """
-    return " " * (indent_amount - 1)
+    return " " * indent_amount if indent_amount >= 1 else ""
 
-def get_dir_structure(path: str, indent_amount = 0) -> list[str] | None:
+def get_dir_structure(path: str, current_indent_amount = 0) -> list[str] | None:
     """Generates the dir scructure.
 
     Arguments:
     dir_path (str) -- The dir which need to parse. 
-    indent_amount (int) -- The indent amount to show the nesting of dir content.
+    current_indent_amount (int) -- The indent amount to show the nesting of dir content.
 
     Returns:
     dir_structure (list[str] | None) -- The list of strings, where each item represents the current dir and its children.
@@ -30,11 +32,11 @@ def get_dir_structure(path: str, indent_amount = 0) -> list[str] | None:
         print(f"{Fore.RED}Parsing error: The provided path is not a dir{Style.RESET_ALL}")
         return None
     
-    indent_template = get_indent_template(indent_amount)
+    indent_template = get_indent_template(current_indent_amount)
     dir_structure = [f"{indent_template}{Fore.BLUE}{dir_path.name}/{Style.RESET_ALL}"]
 
     for child_path in dir_path.iterdir():
-        child_indent_amount = indent_amount + 4
+        child_indent_amount = current_indent_amount + DEFAULT_INDENT_AMOUNT
 
         if child_path.is_dir():
             child_structure = get_dir_structure(child_path, child_indent_amount)
